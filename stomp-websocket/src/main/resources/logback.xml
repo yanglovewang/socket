@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+	<!-- 日志存储目录 -->
+    <property name="LOG_HOME" value="/log" />
+    
+    <!-- 日志appender分类 -->
+    <!-- 程序总体日志文件，包含所有日志 -->
+    <property name="PROGRAM_NAME" value="program" />
+    <!-- mq日志文件 -->
+    <property name="MQ_NAME" value="mq" />
+    <!-- http请求异常日志文件(代码打印error级别的日志) -->
+    <property name="ERROR_NAME" value="error" />
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="${PROGRAM_NAME}"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/${PROGRAM_NAME}.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <!-- 如果按天来回滚，则最大保存时间为60天，60天之前的都将被清理掉 -->
+            <MaxHistory>60</MaxHistory>
+            <!--文件达到配置大小时会被压缩和切割 -->
+            <MaxFileSize>50MB</MaxFileSize>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="${MQ_NAME}"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/${MQ_NAME}.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <!-- 如果按天来回滚，则最大保存时间为60天，60天之前的都将被清理掉 -->
+            <MaxHistory>60</MaxHistory>
+            <!--文件达到配置大小时会被压缩和切割 -->
+            <MaxFileSize>50MB</MaxFileSize>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="${ERROR_NAME}"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+    	<!-- 配置打印error级别日志 -->
+    	<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/${ERROR_NAME}.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <!-- 如果按天来回滚，则最大保存时间为60天，60天之前的都将被清理掉 -->
+            <MaxHistory>60</MaxHistory>
+            <!--文件达到配置大小时会被压缩和切割 -->
+            <MaxFileSize>50MB</MaxFileSize>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="${PROGRAM_NAME}" />
+        <appender-ref ref="${ERROR_NAME}" />
+    </root>
+    
+    <!-- addtivity是否向上级logger传递打印信息。默认是true -->
+    <logger name="com.utry.mq" level="info" addtivity="true">
+        <appender-ref ref="${MQ_NAME}" />
+    </logger>
+
+</configuration>

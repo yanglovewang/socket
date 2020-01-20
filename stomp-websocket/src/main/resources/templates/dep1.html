@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="webjars/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script th:src="@{websocket.js}"></script>
+
+</head>
+<body>
+<div id="id-div">
+
+</div>
+
+</body>
+<script>
+    $(document).ready(function(){
+        let socket = new Websocket()
+        socket.connect('/user/stomp-websocket')
+        socket.subScribe('/topic/greeting', function (res) {
+            $('#id-div').html(res.content)
+        })
+
+    });
+</script>
+</html>

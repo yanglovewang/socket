@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<script src="webjars/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script th:src="@{link_util.js}"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>你好, </h1>
+<h2 id="id-h2"></h2>
+<h3 id="id-h3"></h3>
+
+<input type="text" id="id-advice"><button id="submit">发送</button>
+<script>
+    var stompClient = null;
+    $(document).ready(function(){
+        var res = ajax("/user/name", null)
+        $('#id-h2').html(res.name)
+
+        connect()
+        $('#submit').click(function () {
+            var v = $('#id-advice').val()
+            var o = {name: v}
+            var data = JSON.stringify(o)
+            res = ajax("/user/greeting", data)
+        })
+
+    });
+
+    //连接
+    function connect() {
+        var ws = new SockJS('/user/stomp-websocket');
+        stompClient = Stomp.over(ws);
+
+        stompClient.connect({}, function () {
+            log('Info: STOMP connection opened.');
+
+            //订阅服务端的/topic/greeting地址
+            stompClient.subscribe("/topic/greeting", function (greeting) {
+                let res = JSON.parse(greeting.body)
+                console.log('Received: ' + res.content);
+            })
+        },function () {
+            log('Info: STOMP connection closed.');
+        });
+    }
+
+    //断开连接
+    function disconnect() {
+        if (stompClient != null) {
+            stompClient.disconnect();
+            stompClient = null;
+        }
+        log('Info: STOMP connection closed.');
+    }
+
+    //日志输出
+    function log(message) {
+        console.debug(message);
+    }
+
+</script>
+</body>
+</html>
